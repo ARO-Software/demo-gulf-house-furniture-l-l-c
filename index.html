@@ -13,10 +13,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23171110'/%3E%3Cg fill='none' stroke='%23c9a55f' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 34V17.6L20 6.5l13 11.1V34'/%3E%3Cpath d='M14 29.5v-3.8a2.4 2.4 0 0 1 2.4-2.4h7.2a2.4 2.4 0 0 1 2.4 2.4v3.8'/%3E%3Crect x='12.4' y='27' width='15.2' height='5.6' rx='2.4'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- fonts load async so they never block first paint; display=swap covers the gap -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Jost:wght@300;400;500&display=swap">
-<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Jost:wght@300;400;500&display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Jost:wght@300;400;500&display=swap"></noscript>
+<!-- Blocking on purpose: loading this async (media=print swap) shipped the fonts
+     after first paint and cost 0.2 CLS. Two families, six styles, display=swap. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Jost:wght@300;500&display=swap">
 <link rel="preload" as="image" href="assets/hero-tall.webp" type="image/webp" media="(max-width:819px)" fetchpriority="high">
 <link rel="preload" as="image" href="assets/hero-wide.webp" type="image/webp" media="(min-width:820px)" fetchpriority="high">
 <script>document.documentElement.classList.add('js');</script>
@@ -41,10 +40,10 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   --line:#e0d2ba;
   --ink:#241a12;
   --ink-2:#5b4838;
-  --ink-3:#8a7561;
+  --ink-3:#7f6b58;      /* WCAG AA on cream/paper at label sizes */
   --deep:#171110;
   --deep-2:#241a15;
-  --gold:#a37a37;
+  --gold:#846128;       /* AA on cream, paper and sand */
   --gold-2:#c9a55f;
   --gold-3:#e3cd9c;
   --maxw:1200px;
@@ -120,7 +119,7 @@ h3.display{font-size:clamp(1.5rem,4.4vw,2rem);line-height:1.12}
 .hdr.stuck .logo-mark{width:28px;height:28px;color:var(--gold)}
 .logo-txt{display:flex;flex-direction:column;line-height:1}
 .logo-txt b{font-family:var(--serif);font-weight:500;font-size:1.075rem;letter-spacing:.055em}
-.logo-txt span{font-size:.5rem;font-weight:400;letter-spacing:.42em;text-transform:uppercase;opacity:.72;margin-top:3px}
+.logo-txt span{font-size:.5rem;font-weight:500;letter-spacing:.42em;text-transform:uppercase;opacity:.72;margin-top:3px}
 
 .hdr-act{display:flex;align-items:center;gap:8px}
 .icon-btn{
@@ -399,6 +398,8 @@ h3.display{font-size:clamp(1.5rem,4.4vw,2rem);line-height:1.12}
   transition:opacity .85s var(--ease),transform .85s var(--ease);
   transition-delay:var(--d,0ms);
 }
+/* safety net / no-observer path: show instantly, never mid-fade */
+.js.reveal-now .reveal{opacity:1!important;transform:none!important;transition:none!important}
 
 /* ---------- responsive ---------- */
 @media (min-width:600px){
@@ -519,10 +520,10 @@ h3.display{font-size:clamp(1.5rem,4.4vw,2rem);line-height:1.12}
   <!-- ============ HERO ============ -->
   <section class="hero">
     <picture class="hero-media">
-      <source media="(min-width:820px)" type="image/webp" srcset="assets/hero-wide.webp" width="1400" height="963">
-      <source media="(min-width:820px)" type="image/jpeg" srcset="assets/hero-wide.jpg" width="1400" height="963">
-      <source type="image/webp" srcset="assets/hero-tall.webp" width="800" height="1024">
-      <img src="assets/hero-tall.jpg" width="800" height="1024" alt="Cream upholstered sofa and wing chair beneath a gold crystal chandelier, framed by layered sheer and drape curtains, in the Gulf House Furniture showroom setting" fetchpriority="high" decoding="async">
+      <source media="(min-width:820px)" type="image/webp" srcset="assets/hero-wide.webp" width="1280" height="880">
+      <source media="(min-width:820px)" type="image/jpeg" srcset="assets/hero-wide.jpg" width="1280" height="880">
+      <source type="image/webp" srcset="assets/hero-tall.webp" width="720" height="922">
+      <img src="assets/hero-tall.jpg" width="720" height="922" alt="Cream upholstered sofa and wing chair beneath a gold crystal chandelier, framed by layered sheer and drape curtains, in the Gulf House Furniture showroom setting" fetchpriority="high" decoding="async">
     </picture>
     <div class="hero-scrim" aria-hidden="true"></div>
 
@@ -821,7 +822,10 @@ h3.display{font-size:clamp(1.5rem,4.4vw,2rem);line-height:1.12}
 
   /* ---- scroll reveal ---- */
   var reveals = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
-  function showAll(){ reveals.forEach(function(el){ el.classList.add('in'); }); }
+  function showAll(){
+    document.documentElement.classList.add('reveal-now');
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  }
 
   if(reduce || !('IntersectionObserver' in window)){
     showAll();
